@@ -5,11 +5,53 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.0-preview2-30169" />
+    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.0-preview2-30331" />
   </ItemGroup>
 
   <ItemGroup>
-    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.1.0-preview2-30169" />
+    <Content Update="@(Content->WithMetadataValue('Extension', '.cshtml'))">
+      <Generator>MSBuild:RazorGenerateDesignTime</Generator>
+    </Content>
   </ItemGroup>
+
+  <Target 
+    Name="RazorGenerateDesignTime"
+    DependsOnTargets="ResolveRazorConfiguration;ResolveRazorGenerateInputs;AssignRazorGenerateTargetPaths"
+    BeforeTargets="CoreCompile">
+    
+    <ItemGroup>
+      <RazorGenerateDesignTimeWithTargetPath Include="@(RazorGenerateWithTargetPath)">
+        <GeneratedOutput>$([System.IO.Path]::ChangeExtension('%(RazorGenerateWithTargetPath.GeneratedOutput)', 'cs'))</GeneratedOutput>
+      </RazorGenerateDesignTimeWithTargetPath>
+     <_RazorGenerateDesignTimeOutput Include="%(RazorGenerateDesignTimeWithTargetPath.GeneratedOutput)" />
+    </ItemGroup>
+
+    <MakeDir
+      Directories="%(_RazorGenerateDesignTimeOutput.RelativeDir)"
+      Condition="!Exists('%(_RazorGenerateDesignTimeOutput.RelativeDir)')" />
+
+    <RazorGenerate
+      Debug="$(_RazorDebugGenerateCodeTask)"
+      DebugTool="$(_RazorDebugGenerateCodeTool)"
+      ToolAssembly="$(_RazorToolAssembly)"
+      UseServer="$(UseRazorBuildServer)"
+      ForceServer="$(_RazorForceBuildServer)"
+      PipeName="$(_RazorBuildServerPipeName)"
+      Version="$(RazorLangVersion)"
+      Configuration="@(ResolvedRazorConfiguration)"
+      Extensions="@(ResolvedRazorExtension)"
+      Sources="@(RazorGenerateDesignTimeWithTargetPath)"
+      ProjectRoot="$(MSBuildProjectDirectory)"
+      TagHelperManifest="$(_RazorTagHelperOutputCache)" />
+
+    <ItemGroup>
+      <FileWrites Include="@(_RazorGenerateDesignTimeOutput)" />
+
+      <Compile Include="%(RazorGenerateDesignTimeWithTargetPath.GeneratedOutput)">
+        <AutoGen>true</AutoGen>
+        <DependentUpon>%(RazorGenerateDesignTimeWithTargetPath.Identity)</DependentUpon>
+      </Compile>
+    </ItemGroup>
+  </Target>
 
 </Project>

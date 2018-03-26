@@ -1,0 +1,11 @@
+﻿<Project>
+  <PropertyGroup Label="RestoreSources">
+    <RestoreSources>$(DotNetRestoreSources)</RestoreSources>
+    <RestoreSources>
+      $(RestoreSources);
+      https://dotnet.myget.org/F/aspnetcore-dev/api/v3/index.json;
+      https://dotnet.myget.org/F/aspnetcore-tools/api/v3/index.json;
+      https://dotnet.myget.org/F/roslyn/api/v3/index.json;
+    </RestoreSources>
+  </PropertyGroup>
+</Project>
