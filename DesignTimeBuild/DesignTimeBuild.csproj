@@ -9,40 +9,23 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="@(Content->WithMetadataValue('Extension', '.cshtml'))">
+    <Content Update="@(Content-&gt;WithMetadataValue('Extension', '.cshtml'))">
       <Generator>MSBuild:RazorGenerateDesignTime</Generator>
     </Content>
   </ItemGroup>
 
-  <Target 
-    Name="RazorGenerateDesignTime"
-    DependsOnTargets="ResolveRazorConfiguration;ResolveRazorGenerateInputs;AssignRazorGenerateTargetPaths"
-    BeforeTargets="CoreCompile">
+  <Target Name="RazorGenerateDesignTime" DependsOnTargets="ResolveRazorConfiguration;ResolveRazorGenerateInputs;AssignRazorGenerateTargetPaths" BeforeTargets="CoreCompile">
     
     <ItemGroup>
       <RazorGenerateDesignTimeWithTargetPath Include="@(RazorGenerateWithTargetPath)">
-        <GeneratedOutput>$([System.IO.Path]::ChangeExtension('%(RazorGenerateWithTargetPath.GeneratedOutput)', 'cs'))</GeneratedOutput>
+        <GeneratedOutput>$([System.IO.Path]::ChangeExtension('%(RazorGenerateWithTargetPath.GeneratedOutput)', 'g.cshtml.cs'))</GeneratedOutput>
       </RazorGenerateDesignTimeWithTargetPath>
      <_RazorGenerateDesignTimeOutput Include="%(RazorGenerateDesignTimeWithTargetPath.GeneratedOutput)" />
     </ItemGroup>
 
-    <MakeDir
-      Directories="%(_RazorGenerateDesignTimeOutput.RelativeDir)"
-      Condition="!Exists('%(_RazorGenerateDesignTimeOutput.RelativeDir)')" />
+    <MakeDir Directories="%(_RazorGenerateDesignTimeOutput.RelativeDir)" Condition="!Exists('%(_RazorGenerateDesignTimeOutput.RelativeDir)')" />
 
-    <RazorGenerate
-      Debug="$(_RazorDebugGenerateCodeTask)"
-      DebugTool="$(_RazorDebugGenerateCodeTool)"
-      ToolAssembly="$(_RazorToolAssembly)"
-      UseServer="$(UseRazorBuildServer)"
-      ForceServer="$(_RazorForceBuildServer)"
-      PipeName="$(_RazorBuildServerPipeName)"
-      Version="$(RazorLangVersion)"
-      Configuration="@(ResolvedRazorConfiguration)"
-      Extensions="@(ResolvedRazorExtension)"
-      Sources="@(RazorGenerateDesignTimeWithTargetPath)"
-      ProjectRoot="$(MSBuildProjectDirectory)"
-      TagHelperManifest="$(_RazorTagHelperOutputCache)" />
+    <RazorGenerate Debug="$(_RazorDebugGenerateCodeTask)" DebugTool="$(_RazorDebugGenerateCodeTool)" ToolAssembly="$(_RazorToolAssembly)" UseServer="$(UseRazorBuildServer)" ForceServer="$(_RazorForceBuildServer)" PipeName="$(_RazorBuildServerPipeName)" Version="$(RazorLangVersion)" Configuration="@(ResolvedRazorConfiguration)" Extensions="@(ResolvedRazorExtension)" Sources="@(RazorGenerateDesignTimeWithTargetPath)" ProjectRoot="$(MSBuildProjectDirectory)" TagHelperManifest="$(_RazorTagHelperOutputCache)" />
 
     <ItemGroup>
       <FileWrites Include="@(_RazorGenerateDesignTimeOutput)" />
